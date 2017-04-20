@@ -234,10 +234,14 @@ ul li{
 		padding-bottom: 0;
 		border-bottom: 1px solid rgba(0,0,0,0.1);
 	}
+
+	section.post-content{
+		margin-bottom: 20px;
+	}
 	
 	section.post header{
 		width: 100%;
-		padding: 40px 0 0;
+		padding: 20px 0 0;
 	}
 
 	section.post div.postbody{

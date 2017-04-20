@@ -53,7 +53,7 @@
 			<h3><a href="#">杂文</a></h3>
 			<span>神说要有光，于是便有了光</span>
 		</header>
-		<section class="post">
+		<section class="post post-content">
 			<header>
 				<a class="title" href="#">塔尔科夫斯基的火焰</a>
 				<time>2017年4月18日</time>
@@ -207,6 +207,12 @@ function(){}
 			</div>
 		</div>
 	</div>
+
+	<div class="action-nav clearfix">
+		<div class="home"><img src="../images/icons/home.png" alt=""></div>
+		<div class="share"><img src="../images/icons/share.png" alt=""></div>
+		<div class="comment"><img src="../images/icons/message.png" alt=""><span class="badge">24</span></div>
+	</div>
 	<script src="../script/frame/jquery-2.0.3.min.js"></script>
 	<script src="../script/frame/bootstrap.min.js"></script>
 	<script src="../script/widget/milight-accordion.js"></script>
@@ -221,10 +227,18 @@ function(){}
 		});
 
 		$('.close-comment').click(function(){
-			$('.pop-button').fadeIn(400);
+			if($(window).width() >= 767){
+				$('.pop-button').fadeIn(400);
+			}else{
+				$('.pop-button').fadeOut(400);
+			}
 			$('#comment').fadeOut(400);
 		});
-		
+
+		$('.comment').click(function(){
+			$('#comment').fadeIn(400);
+		});
+
 	</script>
 </body>
 </html>
