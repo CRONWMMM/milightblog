@@ -115,18 +115,21 @@
 	text-indent: 0;
 }
 
-.message{
+.comment-control{
 	font-size: 1.2rem;
 	color: #a0a0a0;
+	margin-bottom: 0;
 }
 
-.message:hover{
-	cursor: pointer;
+.comment-control li{
+	float: left;	
+	margin: 0 0 0 20px;
 }
 
-.message img{
-	width: 20px;
+.comment-control img{
+	width: 18px;
 }
+
 
 
 

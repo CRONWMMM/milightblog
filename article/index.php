@@ -21,17 +21,16 @@
 				</li>
 				<ul id="milight-accordion-sub1" class="milight-accordion-sub">
 					<li>短篇</li>
-					<li>中篇</li>
-					<li>连载</li>
+					<li>长篇</li>
 				</ul>
 				<li data-target="#milight-accordion-sub2">
 					杂文
 					<span>&gt;</span>
 				</li>
 				<ul id="milight-accordion-sub2" class="milight-accordion-sub">
-					<li>JavaScript</li>
-					<li>NodeJS</li>
-					<li>AngularJS</li>
+					<li>感悟</li>
+					<li>随笔</li>
+					<li>纪行</li>
 				</ul>
 				<li data-target="#milight-accordion-sub3">
 					技术栈
@@ -40,11 +39,16 @@
 				<ul id="milight-accordion-sub3" class="milight-accordion-sub">
 					<li>JavaScript</li>
 					<li>NodeJS</li>
-					<li>AngularJS</li>
+					<li>框架</li>
 				</ul>
-				<li>
+				<li data-target="#milight-accordion-sub4">
 					关于
+					<span>&gt;</span>
 				</li>
+				<ul id="milight-accordion-sub4" class="milight-accordion-sub">
+					<li>轻博客</li>
+					<li>博主</li>
+				</ul>
 			</ul>
 		</nav>
 	</header>
@@ -64,6 +68,7 @@
 						<img class="figure" src="../pexels-photo-250164.jpeg" alt="">
 					</a>
 				<p>当世界是勇敢，快速，愚蠢的时候，我们必须寻求什么是安静，缓慢和聪明地支配自己，反对世界的疯狂。在过去几个星期，我一直受到俄罗斯电影导演安德烈·塔尔科夫斯基（Andrei Tarkovsky）的影片的影响。</p>
+				<hr>
 				<pre>
 function(){}
 				</pre>
@@ -114,12 +119,16 @@ function(){}
 				于是来这里求方法来了w(ﾟДﾟ)w 能否透露下 或者私聊邮箱？？？
 				</p>
 			</div>
-			<span class="message pull-right"><img src="../images/icons/message.png" alt=""> 回复</span>
+			<ul class="comment-control pull-right">
+				<li><a href="javascript:;"><img src="../images/icons/delete.png" alt=""> 删除</a></li>
+				<li><a href="javascript:;" class="message"><img src="../images/icons/message.png" alt=""> 回复</a></li>
+			</ul>
+			<!-- <span class="message pull-right"><img src="../images/icons/message.png" alt=""> 回复</span> -->
 		</div>
 		<div class="view-area clearfix">
 			<div class="comment-header">
 				<img src="../images/icons/user.png" alt="CRONW的头像">
-				<h4>床上赵子龙</h4>
+				<h4>赵子龙</h4>
 				<span>在<time data-time="2016 年 12 月 17 日 09:33"> 2014年3月21日 </time>说：</span>
 			</div>
 			<div class="comment-content">
@@ -127,7 +136,10 @@ function(){}
 				人品第一，作品第二。十分欣赏，也十分欣赏你的开源精神，一般人难以做到。
 				</p>
 			</div>
-			<span class="message pull-right"><img src="../images/icons/message.png" alt=""> 回复</span>
+			<ul class="comment-control pull-right">
+				<li><a href="javascript:;"><img src="../images/icons/delete.png" alt=""> 删除</a></li>
+				<li><a href="javascript:;" class="message"><img src="../images/icons/message.png" alt=""> 回复</a></li>
+			</ul>
 			<div class="reply">
 				<div class="reply-area">
 					<div class="reply-header">
@@ -172,7 +184,10 @@ function(){}
 				祝好
 				</p>
 			</div>
-			<span class="message pull-right"><img src="../images/icons/message.png" alt=""> 回复</span>
+			<ul class="comment-control pull-right">
+				<li><a href="javascript:;"><img src="../images/icons/delete.png" alt=""> 删除</a></li>
+				<li><a href="javascript:;" class="message"><img src="../images/icons/message.png" alt=""> 回复</a></li>
+			</ul>
 			<div class="reply">
 				<div class="reply-area">
 					<div class="reply-header">

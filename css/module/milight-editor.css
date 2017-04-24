@@ -1,0 +1,119 @@
+/*li{
+	list-style : none;
+}*/
+
+#milight-editor{
+	margin-top : 80px;
+}
+
+
+
+.milight-editor{
+	margin : 14px;
+}
+
+.editor-header{
+	position : relative;
+	border-radius : 4px 4px 0 0;
+	border : 1px solid #ccc;
+	border-bottom : none;
+	height : 50px;
+	background-color : #eee;
+}
+.editor-header .btn-group{
+	position : absolute;
+	top : 50%;
+	margin-top : -17.5px;
+}
+.editor-header .btn-group button{
+	border : none;
+	background : none;
+	font-size : 1.2em;
+}
+.editor-header .milight-editor-uploadpic{
+	position : absolute;
+	top : 0;
+	left : -1000px;
+	width : 40px;
+	height : 35px;
+	opacity : 0;
+}
+.editor-header .btn-group button:hover{
+	border-radius : 4px;
+	background-color : #ccc;
+	cursor : pointer;
+}
+
+/*#milight-editor .editor-header ul{
+	position : absolute;
+	top : 50%;
+	margin-bottom : 0;
+	margin-top : -17.5px;
+}
+#milight-editor .editor-header ul li button{
+	font-size : 1.3em;
+	margin : 0 2px;
+	padding : 5px 8px;
+	background : none;
+	border : none;
+}
+#milight-editor .editor-header ul li button:hover{
+	border-radius : 4px;
+	background-color : #ccc;
+	cursor : pointer;
+}
+*/
+.editor-active{
+	border-radius : 4px;
+	background-color : #ccc;
+	cursor : pointer;
+}
+
+
+.editor-body{
+	height : 300px;
+	border-radius : 0 0 4px 4px;
+	border : 1px solid #ccc;
+	border-top : none;
+
+	overflow : auto;
+}
+
+
+
+/**
+ * 媒体查询
+ */
+@media screen and (max-width:767px){
+	.milight-editor{
+		margin : 10px;
+	}
+
+	.editor-header{
+		position : relative;
+		border-radius : 4px 4px 0 0;
+		border : 1px solid #ccc;
+		border-bottom : none;
+		height : 30px;
+		background-color : #eee;
+	}
+	.editor-header .btn-group{
+		position : absolute;
+		top : 50%;
+		margin-top : -15px;
+	}
+	.editor-header .btn-group button{
+		border : none;
+		background : none;
+		font-size : 1rem;
+	}
+
+	.editor-body{
+		height : 200px;
+		border-radius : 0 0 4px 4px;
+		border : 1px solid #ccc;
+		border-top : none;
+
+		overflow : auto;
+	}
+}

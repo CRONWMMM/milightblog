@@ -113,6 +113,7 @@ $(function(){
 				selectors = self.options.selectors;				// 缓存selectors
 
 			self.head  = selectors.head;
+			self.body  = selectors.body;
 			self.input = selectors.input;
 			self.wrap  = selectors.wrap;
 			self.bold  = selectors.bold;
@@ -144,7 +145,7 @@ $(function(){
 				editor    = $('<div class="milight-editor"></div>');
 				head = $('<div class="row">' + 					// milight-editor头部
 							'<div class="col-md-12 editor-header">' + 
-								'<input class="milight-editor-uploadpic" type="file" name="pic[]" multiple="multiple">' + 
+								'<input class="milight-editor-uploadpic" type="file" name="images[]" multiple="multiple">' + 
 								'<div class="btn-group" role="toolbar" aria-label="...">' + 
 									'<button type="button" class="btn btn-default milight-editor-wrap">' + 
 										'<span class="glyphicon glyphicon-pencil"></span>' + 
@@ -171,7 +172,7 @@ $(function(){
 										'<span class="glyphicon glyphicon-minus"></span>' + 
 									'</button>' + 
 									'<button type="button" class="btn btn-default milight-editor-music">' + 
-										'<span class="glyphicon glyphicon-music"></span>' + 
+										'<span class="glyphicon glyphicon-tag"></span>' + 
 									'</button>' + 
 								'</div>' + 
 							'</div>' + 
@@ -220,7 +221,7 @@ $(function(){
 					}else if($target.is(self.hr)){							// hr添加分隔线
 						self.addHr();
 					}else if($target.is(self.music)){						// music添加音乐
-
+						self.clearStyle();
 					}
 				});
 			}
@@ -265,9 +266,8 @@ $(function(){
 				// 注意此处有坑，注册change事件之前需要先off掉change事件
 				// 不然会多次执行
 				$input.off('change').change(function(){
-
 					// 检测输入框被清空的情况，防止出错
-					if($input[0].files[0] === undefined) return;
+					if($input[0].files.length === 0) return;
 
 					// 检测是否支持window.FileReader方法
 					if(!window.FileReader) return;
@@ -288,6 +288,11 @@ $(function(){
 			document.execCommand('inserthorizontalrule',false,null);
 		},
 
+		// 清除复制外来文本时候自带的样式
+		clearStyle : function(){
+			$(this.body).html(document.getSelection().toString());
+		},
+
 
 		/**
 		 * addPicToEditor方法，向富文本编辑器中插入图片
@@ -296,6 +301,11 @@ $(function(){
 		addPicToEditor : function(fileList){
 			var self = this;
 			for(var i=0,reader=null,file=null;i<fileList.length;i++){
+				// 检测是否为图片文件，不符合的return
+				if(!/image\/\w+/.test(fileList[i].type)){
+					alert('请插入图片文件');
+					return ;
+				}
 				reader = new FileReader();
 
 				// 还是一样，先解绑再注册，避免太多的引用
@@ -325,6 +335,7 @@ $(function(){
 		canUse    : true,							// 编辑器是否可用，默认可用
 		selectors : {								// 选择器名称
 			head : ".editor-header",
+			body : ".editor-body",
 			input: ".milight-editor-uploadpic",
 			wrap : ".milight-editor-wrap",
 			bold : ".milight-editor-bold",

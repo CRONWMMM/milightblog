@@ -1,0 +1,40 @@
+@charset 'utf-8';
+
+.milight-alert{
+	display: none;
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	width: 250px;
+	margin: -40px 0 0 -125px;
+	z-index: 10000;
+	border-radius: 10px;
+	box-sizing: border-box;
+
+	color: #fff;
+	padding: 20px;
+	overflow: auto;
+}
+
+#milight-alert .alert_close{
+	position: absolute;
+	top: -5px;
+	right: 5px;
+	font-size: 30px;
+}
+
+#milight-alert .alert_close:hover{
+	cursor: pointer;
+}
+
+.milight-success{
+	background-color: rgba(108,191,141,0.8);
+}
+
+.milight-warning{
+	background-color: rgba(222, 150, 26, 0.8);
+}
+
+.milight-error{
+	background-color: rgba(206, 60, 55, 0.8);
+}
