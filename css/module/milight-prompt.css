@@ -1,6 +1,6 @@
 @charset 'utf-8';
 
-.milight-alert{
+#milight-prompt{
 	display: none;
 	position: fixed;
 	top: 50%;
@@ -16,25 +16,25 @@
 	overflow: auto;
 }
 
-#milight-alert .alert_close{
+#milight-prompt .prompt_close{
 	position: absolute;
 	top: -5px;
 	right: 5px;
 	font-size: 30px;
 }
 
-#milight-alert .alert_close:hover{
+#milight-prompt .prompt_close:hover{
 	cursor: pointer;
 }
 
-.milight-success{
+.prompt-success{
 	background-color: rgba(108,191,141,0.8);
 }
 
-.milight-warning{
+.prompt-warning{
 	background-color: rgba(222, 150, 26, 0.8);
 }
 
-.milight-error{
+.prompt-error{
 	background-color: rgba(206, 60, 55, 0.8);
 }

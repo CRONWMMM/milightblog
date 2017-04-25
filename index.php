@@ -6,6 +6,9 @@
 	//引入mysql数据库连接文件 
 	require dirname(__FILE__).'/includes_php/mysqli_connect.php';
 
+	// 绝对路径URL
+	// echo 'http://'.$_SERVER['HTTP_HOST'].dirname($_SERVER['PHP_SELF']);
+
  ?>
 <!DOCTYPE html>
 <html lang="zh-cn">
@@ -19,7 +22,7 @@
 	<link rel="stylesheet" href="./css/include/index.css">
 	<link rel="stylesheet" href="./css/module/milight-editor.css">
 	<link rel="stylesheet" href="./css/module/milight-mask.css">
-	<link rel="stylesheet" href="./css/module/milight-alert.css">
+	<link rel="stylesheet" href="./css/module/milight-prompt.css">
 </head>
 <body>
 	<header>
@@ -76,7 +79,7 @@
 			<?php 
 				// 主页默认显示随笔内容
 				$q = "SELECT 
-							title,brief,picsrc,last_date,love,read_count 
+							a.id,title,brief,picsrc,last_date,love,read_count 
 						FROM 
 							articles AS a
 				  INNER JOIN sub ON a.sub_id=sub.id 
@@ -111,7 +114,7 @@
 				?>
 					<p>
 						<a href="#">
-							<img class="figure" src="<?php echo $row['picsrc'];?>" alt="">
+							<img class="figure" src="<?php echo $row['picsrc'];?>" alt="<?php echo $row['title'];?>">
 						</a>
 					</p>
 				<?php
@@ -119,8 +122,19 @@
 				?>
 					<?php echo $row['brief'];?>
 					<ul class="article-info">
-						<li class="like"><img src="./images/icons/normal.png" alt=""> (<span><?php echo $row['love'];?></span>)</li>
-						<li><img src="./images/icons/read.png" alt=""> (<span><?php echo $row['read_count'];?></span>)</li>
+						<?php 
+							// 如果存在这篇文章的点赞cookie
+							if(isset($_COOKIE['like'.$row['id']])){
+						?>
+						<li data-id="<?php echo $row['id'];?>"><img src="./images/icons/like.png" alt="like"> (<span><?php echo $row['love'];?></span>)</li>
+						<?php 
+							}else{  // 如果不存在这篇文章的点赞cookie
+						?>
+						<li class="like" data-id="<?php echo $row['id'];?>"><img src="./images/icons/normal.png" alt="like"> (<span><?php echo $row['love'];?></span>)</li>
+						<?php
+							}
+						?>
+						<li><img src="./images/icons/read.png" alt="read_count"> (<span><?php echo $row['read_count'];?></span>)</li>
 						<li><a href="javascript:;">阅读更多</a></li>
 					</ul>
 				</div>
@@ -193,28 +207,35 @@
 	
 
 	<!-- milight-mask遮罩层  考虑写成模块插件？ -->
-	<div id="milight-mask"></div>
+	<!-- <div id="milight-mask"></div> -->
 
 	<!-- milight-alert弹出层 考虑写成模块插件？ -->
-	<div id="milight-alert" class="milight-alert milight-success">
-		<span class="alert_info"></span>
-		<span class="alert_close">&times;</span>
-	</div>
+	<!-- <div id="milight-prompt" class="milight-prompt prompt-success">
+		<span class="prompt_info"></span>
+		<span class="prompt_close">&times;</span>
+	</div> -->
 
 
 	<script src="./script/frame/jquery-2.0.3.min.js"></script>
+	<script src="./script/widget/jquery.cookie.js"></script>
 	<script src="./script/frame/bootstrap.min.js"></script>
 	<script src="./script/widget/milight-accordion.js"></script>
 	<script src="./script/widget/milight-editor.js"></script>
+	<script src="./script/widget/milight-mask.js"></script>
+	<script src="./script/widget/milight-prompt.js"></script>	
 	<script src="./script/common/index.js"></script>
 	<script>
 		$(function(){
 			$("#mi-wrapper").MA();
 			$('#myModal .modal-body').ME();
+			$.ML();
+			$.Mask();
+			$.MP();
 		});
 
 		
 	</script>
+	<script src="./script/widget/milight-love.js"></script>
 	
 </body>
 </html>

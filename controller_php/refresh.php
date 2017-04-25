@@ -10,7 +10,7 @@
 		require '../includes_php/mysqli_connect.php';
 		if(isset($_GET['page'])){
 			$q = "SELECT 
-						title,brief,picsrc,last_date,love,read_count 
+						a.id,title,brief,picsrc,last_date,love,read_count 
 					FROM 
 						articles AS a
 			  INNER JOIN sub ON a.sub_id=sub.id 
@@ -21,6 +21,14 @@
 			$num = @mysqli_num_rows($r);
 			if($num > 0){
 				while($row = mysqli_fetch_array($r,MYSQLI_ASSOC)){
+					// 检测点赞COOKIE
+					// 多态构建DOM
+					// 麻痹这块写的麻烦的一逼，后期重改
+					if(isset($_COOKIE['like'.$row['id']])){
+						$li = '<li data-id="'.$row['id'].'"><img src="./images/icons/like.png" alt="like"> (<span>'.$row['love'].'</span>)</li>';
+					}else{
+						$li = '<li class="like" data-id="'.$row['id'].'"><img src="./images/icons/normal.png" alt="like"> (<span>'.$row['love'].'</span>)</li>';
+					}
 					if($row['picsrc']){
 						echo '<section class="post">
 								<header>
@@ -39,7 +47,7 @@
 									</p>
 									'.$row['brief'].'
 									<ul class="article-info">
-										<li class="like"><img src="./images/icons/normal.png" alt=""> (<span>'.$row['love'].'</span>)</li>
+										'.$li.'
 										<li><img src="./images/icons/read.png" alt=""> (<span>'.$row['read_count'].'</span>)</li>
 										<li><a href="javascript:;">阅读更多</a></li>
 									</ul>
@@ -58,7 +66,7 @@
 								<div class="postbody clearfix">
 									'.$row['brief'].'
 									<ul class="article-info">
-										<li class="like"><img src="./images/icons/normal.png" alt=""> (<span>'.$row['love'].'</span>)</li>
+										'.$li.'
 										<li><img src="./images/icons/read.png" alt=""> (<span>'.$row['read_count'].'</span>)</li>
 										<li><a href="javascript:;">阅读更多</a></li>
 									</ul>

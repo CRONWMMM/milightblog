@@ -2,6 +2,7 @@
  * 文集页面跳转
  */
 
+
 $('#milight-accordion').click(function(e){
 	var page = '',
 		market = '';
@@ -51,7 +52,8 @@ $('#milight-accordion').click(function(e){
 	if(e.target.id){
 
 		// milight-mask遮罩开启
-		$('#milight-mask').fadeIn('fast');
+		// $('#milight-mask').fadeIn('fast');
+		$('#milight-mask').trigger('fadeIn');
 		$.ajax({
 			url  : 'controller_php/change_page.php',
 			type : 'GET',
@@ -72,16 +74,10 @@ $('#milight-accordion').click(function(e){
 				// 重置文章article页面
 				$('#articles-wrapper').html(res);
 
-				// 重新绑定点赞功能
-				// 这块暂时这样处理，后期还需要用cookie来做
-				$('.like').off('click').click(function(){
-					$(this).find('img').attr('src','./images/icons/like.png');
-					var text = parseInt($(this).find('span').text()) + 1;
-					$(this).find('span').text(text);
-				});
+			
 
 				// milight-mask遮罩关闭
-				$('#milight-mask').fadeOut('fast');
+				$('#milight-mask').trigger('fadeOut');
 			}
 		
 		});
@@ -89,26 +85,6 @@ $('#milight-accordion').click(function(e){
 
 
 });
-
-
-
-
-
-
-
-// 点赞功能，考虑把它做成一个模块？
-// 这块暂时先这样处理，后期用cookie来做
-$('.like').click(function(){
-	$(this).find('img').attr('src','./images/icons/like.png');
-	var text = parseInt($(this).find('span').text()) + 1;
-	$(this).find('span').text(text);
-});
-
-
-
-
-
-
 
 
 
@@ -162,6 +138,10 @@ $('#submit-article').click(function(e){
 	df.append('brief',brief);
 
 
+	// 等待上传时候打开mask遮罩
+	$('#milight-mask').trigger('fadeIn');;
+
+
 	// 以上完毕，使用Ajax向服务端发送FormData数据
 	// 请求将其添加到数据库
 	// 此处处理数据的服务端文件：./controller_php/control_articles.php
@@ -175,18 +155,17 @@ $('#submit-article').click(function(e){
 		success: function(res){
 
 			// 收到返回值后打印服务端响应信息
-			// 此处先这样用alert处理，考虑用弹框通知形式
-			// alert(res);
-			$('#milight-alert .alert_info').html(res);
+			$('#milight-prompt').trigger('changeInfo',res);
+
+
 
 			// 这块判断要用正则表达式来做。。后面完成
-			if(res === '图片上传成功！文章发表成功！'){
+			if(res === '图片上传成功！文章发表成功！' || res === '文章发表成功！'){
 
 				// 显示milight成功弹框
-				$('#milight-alert').fadeIn('fast').removeClass().addClass('milight-alert milight-success');
-				setTimeout(function(){
-					$('#milight-alert').fadeOut('fast');
-				},2000);
+				$('#milight-prompt').trigger('changeStyle','prompt-success')
+									.trigger('show')
+									.trigger('delayHide');
 
 
 				// 发表成功，再用Ajax更新主页的最新一篇文章显示
@@ -197,17 +176,16 @@ $('#submit-article').click(function(e){
 							  'page' : $('#articles-sub').text()
 						   },
 					success : function(res){
+
+						// 判断正在发布文章的页面是否原本一篇文章也没有
+						// 如果目前发布的是第一篇文章，就将原来页面上的
+						// class="empty"提示信息给删除，再向页面填充文章
 						if($('.empty')[0]){
 							$('#articles-wrapper').html(res);
 						}else{
 							$('#articles-wrapper').prepend($(res));
 						}
-						// 再次重新绑定点赞功能，妈的我已经不想写了，，
-						$('.like').off('click').click(function(){
-							$(this).find('img').attr('src','./images/icons/like.png');
-							var text = parseInt($(this).find('span').text()) + 1;
-							$(this).find('span').text(text);
-						});
+
 					},
 					error: function (returndata) {  
 			            alert(returndata);  
@@ -215,8 +193,9 @@ $('#submit-article').click(function(e){
 				});
 
 			}else{
-				$('#milight-alert').fadeIn('fast').removeClass().addClass('milight-alert milight-error');
-				console.log(res);
+				// $('#milight-prompt').fadeIn('fast').removeClass().addClass('prompt-error');
+				$('#milight-prompt').trigger('changeStyle','prompt-error')
+									.trigger('show');
 			}
 
 
@@ -224,8 +203,12 @@ $('#submit-article').click(function(e){
 			$('.editor-body').html('请输入内容');
 			// 清空files input
 			$('.milight-editor-uploadpic').val('');
+			// 清空标题input
+			$('#article-title').val('');
 			// 关闭模态框
 			$('#myModal .close').trigger('click');
+			// 关闭mask遮罩层
+			$('#milight-mask').trigger('fadeOut');;
 
 		},
 

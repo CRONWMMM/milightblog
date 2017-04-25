@@ -6,9 +6,14 @@
 	top: 0;
 	left: 0;
 	z-index: 9999;
-	background:rgba(0,0,0,0.6) url('../../images/loading/loading.gif') no-repeat center center;
-	background-size: 100px 100px;	
+	background-color: rgba(0,0,0,0.6);
 	width: 100%;
 	height: 100%;
 }
 
+.bgi{
+	background-image: url('../../images/loading/loading.gif');
+	background-repeat: no-repeat;
+	background-position: center center;
+	background-size: 100px 100px;	
+}
