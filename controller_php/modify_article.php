@@ -1,15 +1,15 @@
-<?php #发布或者编辑修改文章
-
+<?php #修改文章
+	
 	header("Content-Type:text/html;charset=utf-8");
 	//页面准入常量ACCESS_INFO，没有这个常量，页面无法访问。
     define('ACCESS_INFO',true);
 
-
     /**
      * 如果是POST方式发送过来的数据
+     * 并且存在$_POST['id']
      * 则可以判定为添加文章
      */
-	if($_SERVER['REQUEST_METHOD'] == 'POST'){
+	if($_SERVER['REQUEST_METHOD'] == 'POST' && $_POST['id']){
 
 		//引入mysql数据库连接文件 
 		require '../includes_php/mysqli_connect.php';
@@ -91,44 +91,32 @@
 
 		// 如果错误数组为空则正常执行
 		if(empty($errors)){
-			$m_id = "SELECT id,market_id 
-					   FROM 
-					   		sub
-			     	  WHERE 
-			     	  		name='$sub' 
-			     	  LIMIT 1";
-			$result = @mysqli_query($dbc,$m_id);
-			while($row = mysqli_fetch_array($result,MYSQLI_ASSOC)){
-				$market_id = $row['market_id'];
-				$sub_id    = $row['id'];
+
+			// 检测picsrc是否存在
+			if($picsrc){
+				$q = "UPDATE articles SET title='{$title}',
+										  content='{$content}',
+										  picsrc='{$picsrc}',
+										  brief='{$brief}',
+										  last_date=NOW() 
+									WHERE id='{$_POST['id']}'
+									LIMIT 1";
+			}else{
+				$q = "UPDATE articles SET title='{$title}',
+										  content='{$content}',
+										  brief='{$brief}',
+										  last_date=NOW() 
+									WHERE id='{$_POST['id']}'
+									LIMIT 1";
 			}
 
-			// 释放资源
-			mysqli_free_result($result);
 
-			$q = "INSERT INTO articles (
-											market_id,
-											sub_id,
-											title,
-											content,
-											picsrc,
-											brief,
-											last_date
-										) VALUES (
-											'$market_id',
-											'$sub_id',
-											'$title',
-											'$content',
-											'$picsrc',
-											'$brief',
-											NOW()
-										)";
 			$r = @mysqli_query($dbc,$q);
-			if($r){
-				$success = '文章发表成功！';
+			if(mysqli_affected_rows($dbc) == 1){
+				$success = '文章修改成功！';
 				echo $success;
 			}else{
-				echo '文章发表失败，错误信息：'.mysqli_error($dbc);
+				echo '文章修改失败，错误信息：'.mysqli_error($dbc);
 			}
 			
 		}else{
@@ -142,5 +130,4 @@
 
 	}
 
-
- ?>
+?>

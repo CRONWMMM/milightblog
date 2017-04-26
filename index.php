@@ -85,7 +85,8 @@
 				  INNER JOIN sub ON a.sub_id=sub.id 
 				  	   WHERE sub.name='随笔' 
 				  	ORDER BY last_date 
-				  	    DESC";
+				  	    DESC 
+				  	   LIMIT 0,3";
 				$r = @mysqli_query($dbc,$q);
 				$num = @mysqli_num_rows($r);
 
@@ -103,8 +104,8 @@
 					<a class="title" href="#"><?php echo $row['title'];?></a>
 					<time><?php echo $row['last_date'];?></time>
 					<ul class="control-article">
-						<li class="delete-article"><img src="./images/icons/delete.png" alt=""></li>
-						<li class="modify-article"><img src="./images/icons/modify.png" alt=""></li>
+						<li class="delete-article" data-id="<?php echo $row['id'];?>"><img src="./images/icons/delete.png" alt=""></li>
+						<li class="modify-article" data-id="<?php echo $row['id'];?>"><img src="./images/icons/modify.png" alt=""></li>
 					</ul>
 				</header>
 				<div class="postbody clearfix">
@@ -199,7 +200,7 @@
 	      </div>
 	      <div class="modal-footer">
 	        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
-	        <button id="submit-article" type="button" class="btn btn-primary">发布</button>
+	        <button id="submit-article" data-method="new" type="button" class="btn btn-primary">发布</button>
 	      </div>
 	    </div>
 	  </div>
@@ -223,7 +224,7 @@
 	<script src="./script/widget/milight-editor.js"></script>
 	<script src="./script/widget/milight-mask.js"></script>
 	<script src="./script/widget/milight-prompt.js"></script>	
-	<script src="./script/common/index.js"></script>
+	<!-- <script src="./script/common/index.js"></script> -->
 	<script>
 		$(function(){
 			$("#mi-wrapper").MA();
@@ -232,10 +233,9 @@
 			$.Mask();
 			$.MP();
 		});
-
-		
 	</script>
 	<script src="./script/widget/milight-love.js"></script>
+	<script src="./script/common/common.js"></script>
 	
 </body>
 </html>

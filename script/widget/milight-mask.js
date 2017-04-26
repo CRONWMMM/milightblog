@@ -39,16 +39,20 @@
 			var self = this;
 
 			// 在milight-mask上绑定背景图开关事件
-			$('#milight-mask').on('onbgi',function(){
+			$('#milight-mask')
+			.on('onbgi',function(){
 				$(this).addClass('bgi');
-			}).on('offbgi',function(){
+			})
+			.on('offbgi',function(){
 				$(this).removeClass();
 			});
 
 			// 在milight-mask上绑定淡入淡出事件
-			$('#milight-mask').on('fadeIn',function(){
+			$('#milight-mask')
+			.on('fadeIn',function(){
 				$(this).fadeIn(self.fadeTime);
-			}).on('fadeOut',function(){
+			})
+			.on('fadeOut',function(){
 				$(this).fadeOut(self.fadeTime);
 			});
 		}

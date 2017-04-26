@@ -47,6 +47,9 @@ $('#milight-accordion').click(function(e){
 			page = '博主';
 			market = '关于';
 			break;
+		default :
+			page = '随笔';
+			market = '杂文';
 	}
 
 	if(e.target.id){
@@ -208,7 +211,7 @@ $('#submit-article').click(function(e){
 			// 关闭模态框
 			$('#myModal .close').trigger('click');
 			// 关闭mask遮罩层
-			$('#milight-mask').trigger('fadeOut');;
+			$('#milight-mask').trigger('fadeOut');
 
 		},
 

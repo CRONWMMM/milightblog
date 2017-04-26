@@ -22,64 +22,51 @@
 			if($num > 0){
 				while($row = mysqli_fetch_array($r,MYSQLI_ASSOC)){
 					// 检测点赞COOKIE
-					// 多态构建DOM
-					// 麻痹这块写的麻烦的一逼，后期重改
+					// 根据是否点赞来构建DOM
 					if(isset($_COOKIE['like'.$row['id']])){
 						$li = '<li data-id="'.$row['id'].'"><img src="./images/icons/like.png" alt="like"> (<span>'.$row['love'].'</span>)</li>';
 					}else{
 						$li = '<li class="like" data-id="'.$row['id'].'"><img src="./images/icons/normal.png" alt="like"> (<span>'.$row['love'].'</span>)</li>';
 					}
+
+
+					// 检测是否存在picsrc封面图片
 					if($row['picsrc']){
-						echo '<section class="post">
-								<header>
-									<a class="title" href="#">'.$row['title'].'</a>
-									<time>'.$row['last_date'].'</time>
-									<ul class="control-article">
-										<li class="delete-article"><img src="./images/icons/delete.png" alt=""></li>
-										<li class="modify-article"><img src="./images/icons/modify.png" alt=""></li>
-									</ul>
-								</header>
-								<div class="postbody clearfix">
-									<p>
-										<a href="#">
-											<img class="figure" src="'.$row['picsrc'].'" alt="">
-										</a>
-									</p>
-									'.$row['brief'].'
-									<ul class="article-info">
-										'.$li.'
-										<li><img src="./images/icons/read.png" alt=""> (<span>'.$row['read_count'].'</span>)</li>
-										<li><a href="javascript:;">阅读更多</a></li>
-									</ul>
-								</div>
-							</section>';
+						$img = '<p>
+									<a href="#">
+										<img class="figure" src="'.$row['picsrc'].'" alt="">
+									</a>
+								</p>';
 					}else{
-						echo '<section class="post">
-								<header>
-									<a class="title" href="#">'.$row['title'].'</a>
-									<time>'.$row['last_date'].'</time>
-									<ul class="control-article">
-										<li class="delete-article"><img src="./images/icons/delete.png" alt=""></li>
-										<li class="modify-article"><img src="./images/icons/modify.png" alt=""></li>
-									</ul>
-								</header>
-								<div class="postbody clearfix">
-									'.$row['brief'].'
-									<ul class="article-info">
-										'.$li.'
-										<li><img src="./images/icons/read.png" alt=""> (<span>'.$row['read_count'].'</span>)</li>
-										<li><a href="javascript:;">阅读更多</a></li>
-									</ul>
-								</div>
-							</section>';
+						$img = '';
 					}
+					echo '<section class="post">
+							<header>
+								<a class="title" href="#">'.$row['title'].'</a>
+								<time>'.$row['last_date'].'</time>
+								<ul class="control-article">
+									<li class="delete-article" data-id="'.$row['id'].'"><img src="./images/icons/delete.png" alt=""></li>
+									<li class="modify-article" data-id="'.$row['id'].'"><img src="./images/icons/modify.png" alt=""></li>
+								</ul>
+							</header>
+							<div class="postbody clearfix">
+								'.$img.$row['brief'].'
+								<ul class="article-info">
+									'.$li.'
+									<li><img src="./images/icons/read.png" alt=""> (<span>'.$row['read_count'].'</span>)</li>
+									<li><a href="javascript:;">阅读更多</a></li>
+								</ul>
+							</div>
+						</section>';
 
-				}
-			}
-		}
+				}		// End of while($row = mysqli_fetch_array($r,MYSQLI_ASSOC)) WHILE
+			}		// End of if($num > 0) IF
+		}		// End of if(isset($_GET['page'])) IF
 
-
-    }
+   		// 关闭数据库连接
+		mysqli_close($dbc);
+		
+    }		// End of if($_SERVER['REQUEST_METHOD'] == 'GET') IF
 
 
  ?>
