@@ -5,6 +5,7 @@
  * body布局
  */
 body{
+	position: relative;
 	margin-left: 240px;
 	background-color: #f9f8f5;
 }
@@ -39,6 +40,16 @@ body > article{
 	padding: 40px 40px 0;
 }
 
+body #loading{
+	display: none;
+	position: absolute;
+	bottom: 0;
+	margin-bottom : -40px;
+	height: 40px;
+	width: 100%;
+	background: url('../../images/loading/loading1.gif') no-repeat center center;
+	background-size: 20px 20px;
+}
 
 
 /**

@@ -113,7 +113,7 @@
 
 			$r = @mysqli_query($dbc,$q);
 			if(mysqli_affected_rows($dbc) == 1){
-				$success = '文章修改成功！';
+				$success = '文章修改成功！请刷新页面后查看';
 				echo $success;
 			}else{
 				echo '文章修改失败，错误信息：'.mysqli_error($dbc);

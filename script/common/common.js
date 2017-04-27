@@ -9,7 +9,8 @@
  */
 ;(function($,window,document,undefined){
 	// 缓存私有变量，节约内存，提升访问速度
-	var page                = '',								// 子文集名称
+		// 这块我把page改成了全局变量，因为Ajax加载文章也需要访问这个page变量
+		window.page         = '随笔',							// 子文集名称
 		market              = '',								// 父文集名称
 		$mask               = null,								// 用来存放遮罩层
 		$market_title       = $('#market-title'),				// header部分父文集标题
@@ -135,7 +136,7 @@
 			$this   = $(this),								// 用于存储$('#submit-article')发布按钮
 			dataform = null;								// 一个对象，包含df对象、以及发送控制的标识
 
-	 	if($this.attr('data-method') === 'new'){
+	 	if($this.attr('data-method') === 'new'){			// 点击时判断用户操作类型，情况一：发布文章
 
 	 		dataform = newFormData();
 	 		if(!dataform.cansend) return;
@@ -143,7 +144,6 @@
 			/**
 			 * 以上检测全部通过，交由Ajax发送
 			 */
-			
 			// 打开遮罩层
 			if(!$mask) $mask = $('#milight-mask');
 			$mask.trigger('fadeIn');
@@ -153,6 +153,7 @@
 			// 使用Ajax向服务端发送FormData数据
 			// 请求将其添加到数据库
 			// 此处处理数据的服务端文件：./controller_php/control_articles.php
+			// 注意，涉及到文件上传，一定要将cache、processData和contentType重新设置！
 			ajaxSendData({
 				url  : './controller_php/control_articles.php',
 				type : 'POST',
@@ -226,99 +227,15 @@
 					$this.removeAttr('disabled');
 			    }
 			});
-
-
-			/** 
-			
-			$.ajax({
-				url : './controller_php/control_articles.php',
-				type: 'POST',
-				data : dataform.df,
-				cache: false,
-			    processData: false,
-			    contentType: false,
-			    success : function(res){
-
-					// 这块判断要用正则表达式来做。。后面完成
-					if(res === '文章发表成功！'){
-						// 显示milight成功弹框
-						$('#milight-prompt').trigger('changeInfo',res)
-											.trigger('changeStyle','prompt-success')
-											.trigger('show')
-											.trigger('delayHide');
-						// 发表成功，用Ajax动态更新主页最新一篇文章
-						$.ajax({
-							url  : './controller_php/refresh.php',
-							type : 'GET',
-							data : {
-									  'page' : $articles_sub.text()
-								   },
-							success : function(res){
-
-								// 这块有隐患，success只是成功接收到服务器返回回来的数据，并没有检测数据内容
-								// 应该向上面一样，检测之后再执行逻辑
-
-								// 判断正在发布文章的页面是否原本一篇文章也没有
-								// 如果目前发布的是第一篇文章，就将原来页面上的
-								// class="empty"提示信息给删除，再向页面填充文章
-								if($('.empty')[0]){
-									$('#articles-wrapper').html(res);
-								}else{
-									$('#articles-wrapper').prepend($(res));
-								}
-
-							},
-							error: function (err) {
-								// 显示出错信息提示框
-								$('#milight-prompt').trigger('changeInfo','哦哟！更新文章出错啦~ 错误编号：' + err.status  + ' 错误信息：' + err.statusText)
-													.trigger('changeStyle','prompt-error')
-													.trigger('show');
-					        }
-						});
-
-
-					}else{
-						// 显示milight错误弹框
-						$('#milight-prompt').trigger('changeInfo',res)
-											.trigger('changeStyle','prompt-error')
-											.trigger('show');
-					}
-
-					// 然后清空富文本编辑器文字
-					$edbody.html('请输入文章内容');
-					// 清空files input
-					$file_input.val('');
-					// 清空标题input
-					$article_title.val('');
-					// 关闭模态框
-					$('#myModal .close').trigger('click');
-					// 关闭mask遮罩层
-					$mask.trigger('fadeOut'); 
-					// 打开按钮
-					$this.removeAttr('disabled');
-			    },
-			    error : function(err){
-					// 显示出错信息提示框
-					$('#milight-prompt').trigger('changeInfo','哦哟！发布文章出错啦~ 错误编号：' + err.status  + ' 错误信息：' + err.statusText)
-										.trigger('changeStyle','prompt-error')
-										.trigger('show');
-					// 关闭mask遮罩层
-					$mask.trigger('fadeOut'); 
-					// 打开按钮
-					$this.removeAttr('disabled');
-			    }
-			});
-			 */
-
-	 	}else if($this.attr('data-method') === 'modify'){
+	 	}else if($this.attr('data-method') === 'modify'){					// 点击时判断用户操作类型，情况二：修改文章
 	 		var id = parseInt($this.attr('data-id')) || undefined;
 	 		dataform = (typeof id === 'number') ? newFormData(id) : newFormData();
 
 	 		if(!dataform.cansend) return;
+
 			// 使用Ajax向服务端发送FormData数据
 			// 请求将其添加到数据库
-			// 此处处理数据的服务端文件：./controller_php/modify_article.php
-			
+			// 此处处理数据的服务端文件：./controller_php/modify_article.php	
 			ajaxSendData({
 				url : './controller_php/modify_article.php',
 				type: 'POST',
@@ -328,7 +245,7 @@
 			    contentType: false,
 			    success : function(res){
 			    	// 这块判断要用正则表达式来做。。后面完成
-					if(res === '文章修改成功！'){
+					if(res === '文章修改成功！请刷新页面后查看'){
 						// 显示milight成功弹框
 						$('#milight-prompt').trigger('changeInfo',res)
 											.trigger('changeStyle','prompt-success')
@@ -367,66 +284,42 @@
 
 			// 还原提交按钮
 			$this.text('发布').attr('data-method','new').removeAttr('data-id');
-
-			/**  
-			$.ajax({
-				url : './controller_php/modify_article.php',
-				type: 'POST',
-				data : dataform.df,
-				cache: false,
-			    processData: false,
-			    contentType: false,
-			    success : function(res){
-
-					// 这块判断要用正则表达式来做。。后面完成
-					if(res === '文章修改成功！'){
-						// 显示milight成功弹框
-						$('#milight-prompt').trigger('changeInfo',res)
-											.trigger('changeStyle','prompt-success')
-											.trigger('show')
-											.trigger('delayHide');
-
-
-					}else{
-						// 显示milight错误弹框
-						$('#milight-prompt').trigger('changeInfo',res)
-											.trigger('changeStyle','prompt-error')
-											.trigger('show');
-					}
-
-					// 然后清空富文本编辑器文字
-					$edbody.html('请输入文章内容');
-					// 清空files input
-					$file_input.val('');
-					// 清空标题input
-					$article_title.val('');
-					// 关闭模态框
-					$('#myModal .close').trigger('click');
-					// 关闭mask遮罩层
-					$mask.trigger('fadeOut'); 
-					// 打开按钮
-					$this.removeAttr('disabled');
-			    },
-			    error : function(err){
-					// 显示出错信息提示框
-					$('#milight-prompt').trigger('changeInfo','哦哟！发布文章出错啦~ 错误编号：' + err.status  + ' 错误信息：' + err.statusText)
-										.trigger('changeStyle','prompt-error')
-										.trigger('show');
-					// 关闭mask遮罩层
-					$mask.trigger('fadeOut'); 
-					// 打开按钮
-					$this.removeAttr('disabled');
-			    }
-			});
-			*/
-
 	 	}
- });
+ 	});
+
 
 
 
 	/**
-	 * 查找需要修改的文章
+	 * 发表文章按钮点击时，将发布按钮状态改回
+	 */	
+	$(document.body).click(function(e){
+		var self     = this,
+			$edbody  = $('.editor-body'),
+			$element = null;
+		$file_input = $('.milight-editor-uploadpic');
+		$element = ($(e.target).attr('id') === 'write-article') ? $(e.target) : null;
+		if($element){
+			// 清空富文本编辑器文字
+			$edbody.html('请输入文章内容');
+			// 清空files input
+			$file_input.val('');
+			// 清空标题input
+			$article_title.val('');
+			// 改变模态框发布按钮的value值和data-method
+	 		$('#submit-article').text('发布')
+	 							.attr('data-method','new')
+	 							.removeAttr('data-id');
+		}
+	});
+
+
+
+
+
+	/**
+	 * 修改按钮点击时，查找需要修改的文章
+	 * 并改写发布按钮状态
 	 */
 	 $(document.body).click(function(e){
 	 	var self     = this,
@@ -451,8 +344,9 @@
 	 		if(!$mask) $mask = $('#milight-mask');
 	 		$mask.trigger('fadeIn');
 
-	 		// 启动Ajax
-	 		$.ajax({
+
+	 		// 启动Ajax发送
+	 		ajaxSendData({
 	 			url : './controller_php/get_article.php',
 	 			type : 'GET',
 	 			data : {
@@ -491,42 +385,8 @@
 										.trigger('show');
 	 			}
 	 		});
-
 	 	}
-
-
 	 });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -614,30 +474,61 @@ function newFormData(id){
 			df.append('images[]',files[i]);
 		}
 
+
 		// 检测文章内容中是否存在图片
 		// 有的话就将文章中所有图片的SRC地址替换为服务器图片地址
-		// 没有就跳过此步骤
-		// 这块存在风险，路径我直接默认'./tmp'
-		// 未做任何容错处理
 		// 
 		// 这里我分了两种情况，第一种是存在id也就是修改文章的时候
-		// 只要文章中的img标签数和input中files文件数不对等，就不更换src地址
 		// 
-		// 第二种个情况，不存在id就是写文章的时候，只判断文章中img标签数量，替换src
-		// 这块代码不健壮，以后有机会重写
+		// 第二种个情况，不存在id就是写文章的时候
+		// 这块代码比较繁琐，不健壮，以后有机会重写
 		if(id && (typeof id === 'number')){
-			if($('.editor-body img').length === files.length){
+			// 如果是修改文章
+			if(files.length === 0 && $('.editor-body img').length > 0){
+				// 跳过
+				arr.push(true);
+			}else if(files.length === $('.editor-body img').length){
 				for(i=0; i<files.length; i++){
-					$('.editor-body img').eq(i).attr('src','./tmp/'+ files[i].name);
+					// 这块我根据本机地址写的绝对路径，正式上线发布的时候要修改
+					$('.editor-body img').eq(i).attr('src',location.protocol + '//' + location.host + '/milightblog/tmp/'+ files[i].name);
 				}
+				arr.push(true);
+			}else{
+				// 如果存在milight提示弹框的情况
+				if($('#milight-prompt')[0]){
+					// 显示出错信息提示框
+					$('#milight-prompt').trigger('changeInfo','sir，文章图片和filelists中图片文件数目不一致')
+										.trigger('changeStyle','prompt-warning')
+										.trigger('show');
+				}else{
+					alert(errinfo);
+				}
+				arr.push(false);
 			}
 		}else{
-			if($('.editor-body img').length > 0){
-				for(i=0; i<$('.editor-body img').length; i++){
-					$('.editor-body img').eq(i).attr('src','./tmp/'+ files[i].name);
+			// 如果是发布新文章
+			// 则需要确认文章图片数和filelists文件数目是否一致，
+			// 不一致弹出milight警告弹窗
+			if($('.editor-body img').length === files.length){
+				for(i=0; i<files.length; i++){
+					// 这块我根据本机地址写的绝对路径，正式上线发布的时候要修改
+					$('.editor-body img').eq(i).attr('src',location.protocol + '//' + location.host + '/milightblog/tmp/'+ files[i].name);
 				}
+				arr.push(true);
+			}else{
+				// 如果存在milight提示弹框的情况
+				if($('#milight-prompt')[0]){
+					// 显示出错信息提示框
+					$('#milight-prompt').trigger('changeInfo','sir，文章图片和filelists中图片文件数目不一致')
+										.trigger('changeStyle','prompt-warning')
+										.trigger('show');
+				}else{
+					alert(errinfo);
+				}
+				arr.push(false);
 			}
 		}
+
 
 
 
@@ -653,7 +544,8 @@ function newFormData(id){
 		// 作为封面图片
 		// files为之前for循环里设置的变量：files=$file_input[0].files
 		if(files.length > 0){
-			df.append('picsrc','./tmp/' + files[0].name);
+			// 这块我根据本机地址写的绝对路径，正式上线发布的时候要修改
+			df.append('picsrc',location.protocol + '//' + location.host + '/milightblog/tmp/'+ files[0].name);
 		}
 
 		// 循环遍历文章中P标签的text内容（此处写死了，设置的遍历次数为2次）

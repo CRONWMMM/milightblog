@@ -19,7 +19,6 @@
 	<!-- <link rel="stylesheet" href="./bootstrap/css/bootstrap.min.css"> -->
 	<link rel="stylesheet" href="css/module/bootstrap.min.css">
 	<link rel="stylesheet" href="./css/include/common.css">
-	<link rel="stylesheet" href="./css/include/index.css">
 	<link rel="stylesheet" href="./css/module/milight-editor.css">
 	<link rel="stylesheet" href="./css/module/milight-mask.css">
 	<link rel="stylesheet" href="./css/module/milight-prompt.css">
@@ -73,7 +72,7 @@
 		<header>
 			<h3><a href="#" id="market-title">杂文</a></h3>
 			<span id="sub-title">随笔</span>
-			<a href="#" class="pull-right" data-toggle="modal" data-target="#myModal">发布文章</a>
+			<a href="#" id="write-article" class="pull-right" data-toggle="modal" data-target="#myModal">发布文章</a>
 		</header>
 		<section id="articles-wrapper">
 			<?php 
@@ -182,6 +181,7 @@
 			</section> -->
 		</section>
 	</article>
+	<div id="loading"></div>
 
 	<!-- Modal -->
 	<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="articles-market">
@@ -236,6 +236,7 @@
 	</script>
 	<script src="./script/widget/milight-love.js"></script>
 	<script src="./script/common/common.js"></script>
-	
+	<script src="./script/common/loading.js"></script>
+
 </body>
 </html>
