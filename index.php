@@ -9,6 +9,32 @@
 	// 绝对路径URL
 	// echo 'http://'.$_SERVER['HTTP_HOST'].dirname($_SERVER['PHP_SELF']);
 
+
+	// 用url + 参数方式跳转至本页面的情况
+	if(isset($_GET['sub']) && isset($_GET['market'])){
+		$q = "SELECT 
+					m.market_name,s.name
+				FROM 
+					market AS m
+		  INNER JOIN sub AS s
+		          ON m.id=s.market_id 
+		  	   WHERE s.name='{$_GET['sub']}' AND m.market_name='{$_GET['market']}'";
+		$r = @mysqli_query($dbc,$q);
+		$num = @mysqli_num_rows($r);
+		if($num === 1){
+			while($row = mysqli_fetch_array($r,MYSQLI_ASSOC)){
+				$market = $row['market_name'];
+				$sub = $row['name'];
+			}
+			mysqli_free_result($r);
+		}else{
+			$market = '杂文';
+			$sub = '随笔';
+		}
+	}else{		// 默认设置为'杂文'----'随笔'模块
+		$market = '杂文';
+		$sub = '随笔';
+	}
  ?>
 <!DOCTYPE html>
 <html lang="zh-cn">
@@ -70,8 +96,8 @@
 	</header>
 	<article>
 		<header>
-			<h3><a href="#" id="market-title">杂文</a></h3>
-			<span id="sub-title">随笔</span>
+			<h3 id="market-title"><?php echo $market;?></h3>
+			<span id="sub-title"><?php echo $sub;?></span>
 			<a href="#" id="write-article" class="pull-right" data-toggle="modal" data-target="#myModal">发布文章</a>
 		</header>
 		<section id="articles-wrapper">
@@ -82,7 +108,7 @@
 						FROM 
 							articles AS a
 				  INNER JOIN sub ON a.sub_id=sub.id 
-				  	   WHERE sub.name='随笔' 
+				  	   WHERE sub.name='$sub'
 				  	ORDER BY last_date 
 				  	    DESC 
 				  	   LIMIT 0,3";
@@ -100,7 +126,7 @@
 
 			<section class="post">
 				<header>
-					<a class="title" href="#"><?php echo $row['title'];?></a>
+					<a class="title" href="./article?id=<?php echo $row['id'];?>"><?php echo $row['title'];?></a>
 					<time><?php echo $row['last_date'];?></time>
 					<ul class="control-article">
 						<li class="delete-article" data-id="<?php echo $row['id'];?>"><img src="./images/icons/delete.png" alt=""></li>
@@ -113,7 +139,7 @@
 					if($row['picsrc']){
 				?>
 					<p>
-						<a href="#">
+						<a href="./article?id=<?php echo $row['id'];?>">
 							<img class="figure" src="<?php echo $row['picsrc'];?>" alt="<?php echo $row['title'];?>">
 						</a>
 					</p>
@@ -135,7 +161,7 @@
 							}
 						?>
 						<li><img src="./images/icons/read.png" alt="read_count"> (<span><?php echo $row['read_count'];?></span>)</li>
-						<li><a href="javascript:;">阅读更多</a></li>
+						<li><a href="./article?id=<?php echo $row['id'];?>">阅读更多</a></li>
 					</ul>
 				</div>
 			</section>
@@ -181,7 +207,7 @@
 			</section> -->
 		</section>
 	</article>
-	<div id="loading"></div>
+	
 
 	<!-- Modal -->
 	<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="articles-market">
@@ -189,8 +215,8 @@
 	    <div class="modal-content">
 	      <div class="modal-header">
 	        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-	        <h4 class="modal-title" id="articles-market">杂文</h4>
-	        <small id="articles-sub">随笔</small>
+	        <h4 class="modal-title" id="articles-market"><?php echo $market;?></h4>
+	        <small id="articles-sub"><?php echo $sub;?></small>
 	      </div>
 	      <div class="modal-body">
 			<div class="input-group">
@@ -215,15 +241,19 @@
 		<span class="prompt_info"></span>
 		<span class="prompt_close">&times;</span>
 	</div> -->
-
+<div id="loading" class="milight-loading text-center"></div>
 
 	<script src="./script/frame/jquery-2.0.3.min.js"></script>
 	<script src="./script/widget/jquery.cookie.js"></script>
 	<script src="./script/frame/bootstrap.min.js"></script>
+
+
 	<script src="./script/widget/milight-accordion.js"></script>
 	<script src="./script/widget/milight-editor.js"></script>
 	<script src="./script/widget/milight-mask.js"></script>
 	<script src="./script/widget/milight-prompt.js"></script>	
+
+	
 	<!-- <script src="./script/common/index.js"></script> -->
 	<script>
 		$(function(){
@@ -232,11 +262,12 @@
 			$.ML();
 			$.Mask();
 			$.MP();
+			// $.MLoad();
 		});
 	</script>
 	<script src="./script/widget/milight-love.js"></script>
 	<script src="./script/common/common.js"></script>
 	<script src="./script/common/loading.js"></script>
-
+	<!-- <script src="./script/widget/milight-loading.js"></script> -->
 </body>
 </html>

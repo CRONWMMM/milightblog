@@ -4,6 +4,11 @@
 	//页面准入常量ACCESS_INFO，没有这个常量，页面无法访问。
     define('ACCESS_INFO',true);
 
+
+    // 判断发送方式
+    // 1.存在$_GET['start']
+    // 2.存在$_GET['count']
+    // 3.存在$_GET['page']
     if(isset($_GET['start']) && isset($_GET['count']) && isset($_GET['page'])){
 
     	//引入mysql数据库连接文件 
@@ -12,7 +17,7 @@
 		// 放置出错信息的数组
 		$errors = array();
 
-		// 父数组
+		// 待发送的父数组
 		$obj = array();
 
 		// 放置数据的子数组
@@ -43,17 +48,16 @@
 			  	    DESC 
 			  	   LIMIT $start,$count";
 			$r = @mysqli_query($dbc,$q);
+			$num = @mysqli_num_rows($r);
 			while($row = mysqli_fetch_array($r,MYSQLI_ASSOC)){
+				$data['num']   = $num;
 				$data['id']    = $row['id'];
 				$data['title'] = $row['title'];
 				$data['brief'] = $row['brief'];
 				$data['date']  = $row['last_date'];
 				$data['love_count']  = $row['love'];
 				$data['read_count']  = $row['read_count'];
-				// 判断是否存在封面图片
-				if($row['picsrc']){
-					$data['picsrc'] = $row['picsrc'];
-				}
+				$data['picsrc'] = $row['picsrc'];
 
 				// 判断是否存在点赞cookie
 				if(isset($_COOKIE['like'.$row['id']])){

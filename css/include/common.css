@@ -47,8 +47,13 @@ body #loading{
 	margin-bottom : -40px;
 	height: 40px;
 	width: 100%;
-	background: url('../../images/loading/loading1.gif') no-repeat center center;
 	background-size: 20px 20px;
+
+	color: #a9a9a9;
+}
+
+.milight-loading{
+	background: url('../../images/loading/loading1.gif') no-repeat center center;
 }
 
 
@@ -72,6 +77,11 @@ section.post{
 section.post header{
 	width: 30%;
 	margin-right: 40px;
+}
+
+section.post-content img{
+	display: block;
+	width: 100%;
 }
 
 ul.control-article{
@@ -258,7 +268,7 @@ ul li{
 	section.post-content{
 		margin-bottom: 40px;
 	}
-	
+
 	section.post header{
 		width: 100%;
 		padding: 20px 0 0;

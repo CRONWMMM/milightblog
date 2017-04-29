@@ -1,4 +1,4 @@
-<?php #发布或者编辑修改文章
+<?php #发布新文章
 
 	header("Content-Type:text/html;charset=utf-8");
 	//页面准入常量ACCESS_INFO，没有这个常量，页面无法访问。

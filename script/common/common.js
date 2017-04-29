@@ -8,9 +8,9 @@
  * 面向过程
  */
 ;(function($,window,document,undefined){
-	// 缓存私有变量，节约内存，提升访问速度
+		// 缓存私有变量，节约内存，提升访问速度
 		// 这块我把page改成了全局变量，因为Ajax加载文章也需要访问这个page变量
-		window.page         = '随笔',							// 子文集名称
+		window.page         = $('#sub-title').text(),			// 子文集名称，这块我考虑到article页面会传递参数切换，所以直接设置了页面上子标题的名字作为page
 		market              = '',								// 父文集名称
 		$mask               = null,								// 用来存放遮罩层
 		$market_title       = $('#market-title'),				// header部分父文集标题
@@ -23,6 +23,7 @@
 
 	/**
 	 * 为milight-accordion绑定点击事件
+	 * Ajax实现页面跳转
 	 */
 	$('#milight-accordion').click(function(e){
 		// 预先定义存储遮罩层，这块有个坑
@@ -83,6 +84,12 @@
 		if(page && market){
 			// 首先开启遮罩层，防止重复点击执行函数导致页面崩溃
 			$mask.trigger('fadeIn');
+
+			// 换页后重置datalen
+			window.datalen = window.count;
+			$('#loading').hide()
+					.addClass('milight-loading')
+					.text('');
 
 			// Ajax提交换页申请
 			$.ajax({
@@ -397,6 +404,19 @@
  */
 
 
+/**
+ * 获取url的请求参数
+ * @param  {[type]} name [description]
+ * @return {[type]}      [description]
+ */
+function getQueryString(name) { 
+    var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i"); 
+    var r = window.location.search.substr(1).match(reg); 
+    if (r != null) return decodeURI(r[2]); 
+    return null; 
+} 
+
+
 
 /**
  * 检测传入字符串是否为空
@@ -553,7 +573,8 @@ function newFormData(id){
 		// 添加到brief简介里，作为文章概要
 		if($.trim($edbody.text()) && $('.editor-body p').length){	// 富文本body里面text不为空,且必须存在p标签则执行逻辑
 			for(var i=0;i<2;i++){
-				brief += '<p>' + $.trim($('.editor-body p').eq(i).text()) + '<p>';
+				// 注意！！这块要写成html()，不能写成text()，jQuery的html()有自动转译HTML实体功能，防止XSS攻击
+				brief += '<p>' + $.trim($('.editor-body p').eq(i).html()) + '<p>';
 			}
 		}
 		arr.push(check_empty(brief,'文章概要不能为空',function(){

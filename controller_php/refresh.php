@@ -33,7 +33,7 @@
 					// 检测是否存在picsrc封面图片
 					if($row['picsrc']){
 						$img = '<p>
-									<a href="#">
+									<a href="./article?id='.$row['id'].'">
 										<img class="figure" src="'.$row['picsrc'].'" alt="">
 									</a>
 								</p>';
@@ -42,7 +42,7 @@
 					}
 					echo '<section class="post">
 							<header>
-								<a class="title" href="#">'.$row['title'].'</a>
+								<a class="title" href="./article?id='.$row['id'].'">'.$row['title'].'</a>
 								<time>'.$row['last_date'].'</time>
 								<ul class="control-article">
 									<li class="delete-article" data-id="'.$row['id'].'"><img src="./images/icons/delete.png" alt=""></li>
@@ -54,7 +54,7 @@
 								<ul class="article-info">
 									'.$li.'
 									<li><img src="./images/icons/read.png" alt=""> (<span>'.$row['read_count'].'</span>)</li>
-									<li><a href="javascript:;">阅读更多</a></li>
+									<li><a href="./article?id='.$row['id'].'">阅读更多</a></li>
 								</ul>
 							</div>
 						</section>';

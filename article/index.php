@@ -1,3 +1,113 @@
+<?php
+	header("Content-Type:text/html;charset=utf-8");
+	//页面准入常量ACCESS_INFO，没有这个常量，页面无法访问。
+    define('ACCESS_INFO',true);
+
+	//引入mysql数据库连接文件 
+	// require dirname(__FILE__).'/includes_php/mysqli_connect.php';
+    require '../includes_php/mysqli_connect.php';
+
+    if(isset($_GET['id'])){
+    	$q = "SELECT 
+					a.id,a.sub_id,s.name,m.market_name,title,content,last_date
+				FROM 
+					articles AS a 
+		  INNER JOIN sub AS s
+		  INNER JOIN market AS m
+		  		  ON a.sub_id=s.id AND a.market_id=m.id
+		  	   WHERE a.id='{$_GET['id']}'
+		  	   LIMIT 1";
+		$r = @mysqli_query($dbc,$q);
+		$num = @mysqli_num_rows($r);
+
+
+		// 搜索文章信息
+		if($num === 1){
+			while($row = mysqli_fetch_array($r,MYSQLI_ASSOC)){
+				$id      = $row['id'];
+				$sub_id  = $row['sub_id'];
+				$market  = $row['market_name'];
+				$sub     = $row['name'];
+				$title   = $row['title'];
+				$date    = $row['last_date'];
+				$content = $row['content'];
+			}
+			mysqli_free_result($r);
+
+
+			// 刷新阅读数
+			$q = "UPDATE articles SET read_count=read_count+1 WHERE id='$id'";
+			$r = @mysqli_query($dbc,$q);
+
+			// 获取上一篇文章信息
+			$q = "SELECT 
+						id,title
+					FROM 
+						articles
+			  	   WHERE last_date>'$date' AND sub_id='$sub_id'
+			  	ORDER BY last_date
+			  	     ASC
+			  	   LIMIT 1";
+			$r = @mysqli_query($dbc,$q);
+			$num = @mysqli_num_rows($r);
+			while($row = mysqli_fetch_array($r,MYSQLI_ASSOC)){
+				$prev_id    = $row['id'];
+				$prev_title = $row['title']; 
+			}
+			mysqli_free_result($r);
+
+			// 获取下一篇文章信息
+			$q = "SELECT 
+						id,title
+					FROM 
+						articles
+			  	   WHERE last_date<'$date' AND sub_id='$sub_id'
+			  	ORDER BY last_date
+			  	     DESC
+			  	   LIMIT 1";
+			$r = @mysqli_query($dbc,$q);
+			$num = @mysqli_num_rows($r);
+			while($row = mysqli_fetch_array($r,MYSQLI_ASSOC)){
+				$next_id    = $row['id'];
+				$next_title = $row['title']; 
+			}
+			mysqli_free_result($r);
+
+			// 拼装上下文切换导航
+			$article_ul = '<ul class="more-articles clearfix">
+								<li class="pull-left">
+									<h5>上一篇</h5>
+									<a href="./?id='.$prev_id.'">'.$prev_title.'</a>
+								</li>
+								<li class="pull-right">
+									<h5>下一篇</h5>
+									<a href="./?id='.$next_id.'">'.$next_title.'</a>
+								</li>
+							</ul>';
+
+
+			// 获取评论数
+			$q = "SELECT 
+						id,article_id,name,admin,website,content,DATE_FORMAT(comment_date,'%Y年%c月%e日') AS co_date
+					FROM 
+						 comment
+			  	   WHERE article_id='$id'
+			  	   ORDER BY comment_date DESC 
+			  	   ";
+			$r = @mysqli_query($dbc,$q);
+			$comment_num = @mysqli_num_rows($r);
+
+		}else{
+			$market = '客官，您要的文章走丢咯';
+			$sub    = '未知主题';
+		}
+    }else{
+    	$market = '客官，您要的文章走丢咯';
+		$sub    = '未知主题';
+    }
+
+?>
+
 <!DOCTYPE html>
 <html lang="zh-cn">
 <head>
@@ -7,6 +117,7 @@
 	<link rel="stylesheet" href="../css/module/bootstrap.min.css">
 	<link rel="stylesheet" href="../css/include/common.css">
 	<link rel="stylesheet" href="../css/include/article.css">
+	<link rel="stylesheet" href="../css/module/milight-prompt.css">
 </head>
 <body>
 	<header>
@@ -54,206 +165,230 @@
 	</header>
 	<article>
 		<header>
-			<h3><a href="#">杂文</a></h3>
-			<span>神说要有光，于是便有了光</span>
+			<h3><?php echo $market;?></h3>
+			<span><?php echo $sub;?></span>
 		</header>
 		<section class="post post-content">
+			
 			<header>
-				<a class="title" href="#">塔尔科夫斯基的火焰</a>
-				<time>2017年4月18日</time>
+				<span id="articleID" class="title" data-id="<?php echo $id;?>"><?php echo $title;?></span>
+				<time><?php echo $date?></time>
 			</header>
 			<div class="postbody">
-				<p>
-					<a href="#">
-						<img class="figure" src="../pexels-photo-250164.jpeg" alt="">
-					</a>
-				<p>当世界是勇敢，快速，愚蠢的时候，我们必须寻求什么是安静，缓慢和聪明地支配自己，反对世界的疯狂。在过去几个星期，我一直受到俄罗斯电影导演安德烈·塔尔科夫斯基（Andrei Tarkovsky）的影片的影响。</p>
-				<hr>
-				<pre>
-function(){}
-				</pre>
-				<p>美国的功能障碍现在与其与俄罗斯的对抗关系相争应，而且我也安慰那些对塔尔科夫斯基也不太在意的俄罗斯大国。他们发现他的灵性，模糊性和高贵度都是危险的，所以他们禁止并拖延了他所有的电影。但是，我喜欢灵性，歧义和夸张，所以我当然也喜欢塔尔科夫斯基。他的国家的一切发现危险他的工作，我认为必不可少。</p>
-				<p>当世界是勇敢，快速，愚蠢的时候，我们必须寻求什么是安静，缓慢和聪明地支配自己，反对世界的疯狂。在过去几个星期，我一直受到俄罗斯电影导演安德烈·塔尔科夫斯基（Andrei Tarkovsky）的影片的影响。</p>
-				<blockquote class="blockquote-reverse">
-					<p>我曾经跨过山和大海，也穿过人山人海。</p>
-				</blockquote>
-				<p>美国的功能障碍现在与其与俄罗斯的对抗关系相争应，而且我也安慰那些对塔尔科夫斯基也不太在意的俄罗斯大国。他们发现他的灵性，模糊性和高贵度都是危险的，所以他们禁止并拖延了他所有的电影。但是，我喜欢灵性，歧义和夸张，所以我当然也喜欢塔尔科夫斯基。他的国家的一切发现危险他的工作，我认为必不可少。</p>
-				<div class="alert alert-warning alert-dismissible" role="alert">
-				  <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-				  <strong>Warning!</strong> Better check yourself, you're not looking too good.
-				</div>
-				<p>当世界是勇敢，快速，愚蠢的时候，我们必须寻求什么是安静，缓慢和聪明地支配自己，反对世界的疯狂。在过去几个星期，我一直受到俄罗斯电影导演安德烈·塔尔科夫斯基（Andrei Tarkovsky）的影片的影响。</p>
-				<p>美国的功能障碍现在与其与俄罗斯的对抗关系相争应，而且我也安慰那些对塔尔科夫斯基也不太在意的俄罗斯大国。他们发现他的灵性，模糊性和高贵度都是危险的，所以他们禁止并拖延了他所有的电影。但是，我喜欢灵性，歧义和夸张，所以我当然也喜欢塔尔科夫斯基。他的国家的一切发现危险他的工作，我认为必不可少。</p>
-				<ul class="more-articles clearfix">
-					<li class="pull-left">
-						<h5>上一篇</h5>
-						<a>克里斯多夫的悲伤</a>
-					</li>
-					<li class="pull-right">
-						<h5>下一篇</h5>
-						<a>这个年纪</a>
-					</li>
-				</ul>
+				<?php echo $content;?>
+				<?php echo $article_ul;?>
+			</div>
 		</section>
 	</article>
-	<span class="pop-button"><img src="../images/icons/message.png" alt=""><span class="badge">42</span></span>
+	<span class="pop-button"><img src="../images/icons/message.png" alt=""><span class="badge"><?php echo $comment_num;?></span></span>
 	<div id="comment">
 		<h3>评论</h3>
 		<span class="close-comment"><img src="../images/icons/close.png" alt=""></span>
-		<div id="write-area">
-			<input type="text" placeholder="昵称">
-			<input type="text" placeholder="网站">
-			<textarea  name="" id="" placeholder="说两句吧"></textarea>
+		<div id="write-area" class="clearfix" data-method="comment" data-replyid="0">
+			<input id="name" name="name" type="text" placeholder="昵称">
+			<input id="website" name="website" type="text" placeholder="网站">
+			<textarea name="content" id="content" placeholder="说两句吧"></textarea>
+			<button class="btn btn-primary pull-right">提交</button>
 		</div>
-		<div class="view-area clearfix">
-			<div class="comment-header">
-				<img src="../images/icons/admin.png" alt="CRONW的头像">
-				<h4>CRONW</h4>
-				<span>在<time data-time="2016 年 12 月 17 日 09:33"> 2016年12月17日 </time>说：</span>
-			</div>
-			<div class="comment-content">
-				<p>
-				博主你好！
-				我很好奇 你那模糊的原理 于是我自己也写了点 虽然在谷歌和火狐上面有你那样的效果
-				可是360浏览器上面浏览的话就很卡 尝试三天没事没办法解决
-				于是来这里求方法来了w(ﾟДﾟ)w 能否透露下 或者私聊邮箱？？？
-				</p>
-			</div>
-			<ul class="comment-control pull-right">
-				<li><a href="javascript:;"><img src="../images/icons/delete.png" alt=""> 删除</a></li>
-				<li><a href="javascript:;" class="message"><img src="../images/icons/message.png" alt=""> 回复</a></li>
-			</ul>
-			<!-- <span class="message pull-right"><img src="../images/icons/message.png" alt=""> 回复</span> -->
-		</div>
-		<div class="view-area clearfix">
-			<div class="comment-header">
-				<img src="../images/icons/user.png" alt="CRONW的头像">
-				<h4>赵子龙</h4>
-				<span>在<time data-time="2016 年 12 月 17 日 09:33"> 2014年3月21日 </time>说：</span>
-			</div>
-			<div class="comment-content">
-				<p>
-				人品第一，作品第二。十分欣赏，也十分欣赏你的开源精神，一般人难以做到。
-				</p>
-			</div>
-			<ul class="comment-control pull-right">
-				<li><a href="javascript:;"><img src="../images/icons/delete.png" alt=""> 删除</a></li>
-				<li><a href="javascript:;" class="message"><img src="../images/icons/message.png" alt=""> 回复</a></li>
-			</ul>
-			<div class="reply">
-				<div class="reply-area">
-					<div class="reply-header">
-						<img src="../images/icons/user.png" alt="CRONW的头像">
-						<h4>justify</h4>
-						<span>在<time data-time="2016 年 12 月 17 日 09:33"> 2014年3月21日 </time>说：</span>
-					</div>
-					<div class="reply-content">
-						<p>说的非常好，赞一个！我很好奇 你那模糊的原理 于是我自己也写了点</p>
-					</div>
+		<div id="comment-area">
+			<?php 
+
+				while($row = mysqli_fetch_array($r,MYSQLI_ASSOC)){
+					$comment_id = $row['id'];
+					$article_id = $row['article_id'];
+					$name = $row['name'];
+					$admin = $row['admin'];
+					$website = $row['website'];
+					$content = $row['content'];
+					$comment_date = $row['co_date'];
+			?>
+			<div class="view-area clearfix">
+				<div class="comment-header">
+					<?php 
+						if($admin){
+							echo '<img src="../images/icons/admin.png" alt="'.$name.'的头像">';
+						}else{
+							echo '<img src="../images/icons/user.png" alt="'.$name.'的头像">';
+						}
+					?>
+					<?php 
+						if($website){
+							echo '<h4><a href="http://'.$website.'">'.$name.'</a></h4>';
+						}else{
+							echo '<h4>'.$name.'</h4>';
+						}
+					?>
+					<span>在<time data-time="'.$comment_date .'"> <?php echo $comment_date;?>  </time>说：</span>
 				</div>
-				<div class="reply-area">
-					<div class="reply-header">
-						<img src="../images/icons/user.png" alt="CRONW的头像">
-						<h4>疾风剑豪</h4>
-						<span>在<time data-time="2016 年 12 月 17 日 09:33"> 2014年3月21日 </time>说：</span>
-					</div>
-					<div class="reply-content">
-						<p>如果你想要来杀我，最好把你的朋友们也带上。</p>
-					</div>
+				<div class="comment-content">
+					<p>
+						<?php echo $content;?>
+					</p>
 				</div>
-				<div class="reply-area">
-					<div class="reply-header">
-						<img src="../images/icons/admin.png" alt="CRONW的头像">
-						<h4>疾风剑豪</h4>
-						<span>在<time data-time="2016 年 12 月 17 日 09:33"> 2014年3月21日 </time>说：</span>
-					</div>
-					<div class="reply-content">
-						<p>如果你想要来杀我，最好把你的朋友们也带上。</p>
-					</div>
-				</div>
+				<ul class="comment-control pull-right">
+					<li><a href="javascript:;"><img src="../images/icons/delete.png" alt=""> 删除</a></li>
+					<li><a href="javascript:;" class="message"><img src="../images/icons/message.png" alt=""> 回复</a></li>
+				</ul>
 			</div>
-		</div>
-		<div class="view-area clearfix">
-			<div class="comment-header">
-				<img src="../images/icons/user.png" alt="CRONW的头像">
-				<h4>盖伦</h4>
-				<span>在<time data-time="2016 年 12 月 17 日 09:33"> 2013年10月8日 </time>说：</span>
-			</div>
-			<div class="comment-content">
-				<p>
-				祝好
-				</p>
-			</div>
-			<ul class="comment-control pull-right">
-				<li><a href="javascript:;"><img src="../images/icons/delete.png" alt=""> 删除</a></li>
-				<li><a href="javascript:;" class="message"><img src="../images/icons/message.png" alt=""> 回复</a></li>
-			</ul>
-			<div class="reply">
-				<div class="reply-area">
-					<div class="reply-header">
-						<img src="../images/icons/user.png" alt="CRONW的头像">
-						<h4>疾风剑豪</h4>
-						<span>在<time data-time="2016 年 12 月 17 日 09:33"> 2014年3月21日 </time>说：</span>
-					</div>
-					<div class="reply-content">
-						<p>如果你想要来杀我，最好把你的朋友们也带上。</p>
-					</div>
+			<?php 
+				}
+				mysqli_free_result($r);
+			?>
+<!-- 			<div class="view-area clearfix">
+				<div class="comment-header">
+					<img src="../images/icons/user.png" alt="CRONW的头像">
+					<h4>赵子龙</h4>
+					<span>在<time data-time="2016 年 12 月 17 日 09:33"> 2014年3月21日 </time>说：</span>
 				</div>
-				<div class="reply-area">
-					<div class="reply-header">
-						<img src="../images/icons/user.png" alt="CRONW的头像">
-						<h4>疾风剑豪</h4>
-						<span>在<time data-time="2016 年 12 月 17 日 09:33"> 2014年3月21日 </time>说：</span>
-					</div>
-					<div class="reply-content">
-						<p>如果你想要来杀我，最好把你的朋友们也带上。</p>
-					</div>
+				<div class="comment-content">
+					<p>
+					人品第一，作品第二。十分欣赏，也十分欣赏你的开源精神，一般人难以做到。
+					</p>
 				</div>
-				<div class="reply-area">
-					<div class="reply-header">
-						<img src="../images/icons/user.png" alt="CRONW的头像">
-						<h4>疾风剑豪</h4>
-						<span>在<time data-time="2016 年 12 月 17 日 09:33"> 2014年3月21日 </time>说：</span>
+				<ul class="comment-control pull-right">
+					<li><a href="javascript:;"><img src="../images/icons/delete.png" alt=""> 删除</a></li>
+					<li><a href="javascript:;" class="message"><img src="../images/icons/message.png" alt=""> 回复</a></li>
+				</ul>
+				<div class="reply">
+					<div class="reply-area">
+						<div class="reply-header">
+							<img src="../images/icons/user.png" alt="CRONW的头像">
+							<h4>justify</h4>
+							<span>在<time data-time="2016 年 12 月 17 日 09:33"> 2014年3月21日 </time>说：</span>
+						</div>
+						<div class="reply-content">
+							<p>说的非常好，赞一个！我很好奇 你那模糊的原理 于是我自己也写了点</p>
+						</div>
 					</div>
-					<div class="reply-content">
-						<p>如果你想要来杀我，最好把你的朋友们也带上。</p>
+					<div class="reply-area">
+						<div class="reply-header">
+							<img src="../images/icons/user.png" alt="CRONW的头像">
+							<h4>疾风剑豪</h4>
+							<span>在<time data-time="2016 年 12 月 17 日 09:33"> 2014年3月21日 </time>说：</span>
+						</div>
+						<div class="reply-content">
+							<p>如果你想要来杀我，最好把你的朋友们也带上。</p>
+						</div>
+					</div>
+					<div class="reply-area">
+						<div class="reply-header">
+							<img src="../images/icons/admin.png" alt="CRONW的头像">
+							<h4>疾风剑豪</h4>
+							<span>在<time data-time="2016 年 12 月 17 日 09:33"> 2014年3月21日 </time>说：</span>
+						</div>
+						<div class="reply-content">
+							<p>如果你想要来杀我，最好把你的朋友们也带上。</p>
+						</div>
 					</div>
 				</div>
 			</div>
+			<div class="view-area clearfix">
+				<div class="comment-header">
+					<img src="../images/icons/user.png" alt="CRONW的头像">
+					<h4>盖伦</h4>
+					<span>在<time data-time="2016 年 12 月 17 日 09:33"> 2013年10月8日 </time>说：</span>
+				</div>
+				<div class="comment-content">
+					<p>
+					祝好
+					</p>
+				</div>
+				<ul class="comment-control pull-right">
+					<li><a href="javascript:;"><img src="../images/icons/delete.png" alt=""> 删除</a></li>
+					<li><a href="javascript:;" class="message"><img src="../images/icons/message.png" alt=""> 回复</a></li>
+				</ul>
+				<div class="reply">
+					<div class="reply-area">
+						<div class="reply-header">
+							<img src="../images/icons/user.png" alt="CRONW的头像">
+							<h4>疾风剑豪</h4>
+							<span>在<time data-time="2016 年 12 月 17 日 09:33"> 2014年3月21日 </time>说：</span>
+						</div>
+						<div class="reply-content">
+							<p>如果你想要来杀我，最好把你的朋友们也带上。</p>
+						</div>
+					</div>
+					<div class="reply-area">
+						<div class="reply-header">
+							<img src="../images/icons/user.png" alt="CRONW的头像">
+							<h4>疾风剑豪</h4>
+							<span>在<time data-time="2016 年 12 月 17 日 09:33"> 2014年3月21日 </time>说：</span>
+						</div>
+						<div class="reply-content">
+							<p>如果你想要来杀我，最好把你的朋友们也带上。</p>
+						</div>
+					</div>
+					<div class="reply-area">
+						<div class="reply-header">
+							<img src="../images/icons/user.png" alt="CRONW的头像">
+							<h4>疾风剑豪</h4>
+							<span>在<time data-time="2016 年 12 月 17 日 09:33"> 2014年3月21日 </time>说：</span>
+						</div>
+						<div class="reply-content">
+							<p>如果你想要来杀我，最好把你的朋友们也带上。</p>
+						</div>
+					</div>
+				</div>
+			</div> -->
 		</div>
 	</div>
 
 	<div class="action-nav clearfix">
 		<div class="home"><img src="../images/icons/home.png" alt=""></div>
 		<div class="share"><img src="../images/icons/share.png" alt=""></div>
-		<div class="comment"><img src="../images/icons/message.png" alt=""><span class="badge">24</span></div>
+		<div class="comment"><img src="../images/icons/message.png" alt=""><span class="badge"><?php echo $comment_num;?></span></div>
 	</div>
 	<script src="../script/frame/jquery-2.0.3.min.js"></script>
 	<script src="../script/frame/bootstrap.min.js"></script>
 	<script src="../script/widget/milight-accordion.js"></script>
+	<script src="../script/widget/milight-prompt.js"></script>	
+	<script src="../script/common/comment.js"></script>
 	<script>
 		$(function(){
 			$("#mi-wrapper").MA();
+			$.MP();
 		});
 
-		$('.pop-button').click(function(){
-			$(this).fadeOut(400);
-			$('#comment').fadeIn(400);
-		});
 
-		$('.close-comment').click(function(){
-			if($(window).width() >= 767){
-				$('.pop-button').fadeIn(400);
-			}else{
-				$('.pop-button').fadeOut(400);
-			}
-			$('#comment').fadeOut(400);
+		/**
+		 * milight-accordion跳转导航
+		 */
+		$(function(){
+			$('.milight-accordion-sub li').click(function(e){
+				switch($(e.target).text()){
+					case '短篇':
+						window.location.href=encodeURI("http://localhost:8080/milightblog?sub=短篇&market=小说");
+						break;
+					case '长篇':
+						window.location.href=encodeURI("http://localhost:8080/milightblog?sub=长篇&market=小说");
+						break;
+					case '感悟':
+						window.location.href=encodeURI("http://localhost:8080/milightblog?sub=感悟&market=杂文");
+						break;
+					case '随笔':
+						window.location.href=encodeURI("http://localhost:8080/milightblog?sub=随笔&market=杂文");
+						break;
+					case '纪行':
+						window.location.href=encodeURI("http://localhost:8080/milightblog?sub=纪行&market=杂文");
+						break;
+					case 'JavaScript':
+						window.location.href=encodeURI("http://localhost:8080/milightblog?sub=JavaScript&market=技术栈");
+						break;
+					case 'NodeJS':
+						window.location.href=encodeURI("http://localhost:8080/milightblog?sub=NodeJS&market=技术栈");
+						break;
+					case '框架':
+						window.location.href=encodeURI("http://localhost:8080/milightblog?sub=框架&market=技术栈");
+						break;
+					case '轻博客':
+						window.location.href=encodeURI("http://localhost:8080/milightblog?sub=轻博客&market=关于");
+						break;
+					case '博主':
+						window.location.href=encodeURI("http://localhost:8080/milightblog?sub=博主&market=关于");
+						break;
+				}
+			});
 		});
-
-		$('.comment').click(function(){
-			$('#comment').fadeIn(400);
-		});
-
 	</script>
 </body>
 </html>
